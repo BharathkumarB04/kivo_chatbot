@@ -51,9 +51,10 @@ python manage.py runserver
 
 ### 📸 A Peek Into Kivo
 
-(Insert screenshots, short demo GIFs, or a video link here)
+<p align="center">
+  <img src="kivo.jpg" width="500" alt="Kivo AI Screenshot" />
+</p>
 
----
 
 ### 🔄 What's Next?
 
