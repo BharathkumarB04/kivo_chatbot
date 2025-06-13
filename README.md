@@ -1,6 +1,6 @@
 # kivo_chatbot
 
-## ✨ Kivo AI – Your Friendly AI Sidekick
+## ✨ Kivo AI – Your Friendly AI Dude...
 
 Kivo AI is like your digital buddy that you can talk to anytime. Need help with something? Got a random question? Just feeling curious? Kivo listens, responds smartly, and makes things easier for you. It’s not just another chatbot – it's built to feel like you're chatting with a real companion who actually gets what you're saying.
 ---
@@ -19,9 +19,9 @@ Kivo AI is like your digital buddy that you can talk to anytime. Need help with 
 
 * **Python** for backend logic
 * **Django** for the web framework
-* **Gemini API** / **OpenAI API** for the brains
+* **Gemini API** for the brains
 * **HTML + CSS** for a clean and simple UI
-* **SQLite** (or your preferred DB) for storage
+* **SQLite** for storage
 
 ---
 
