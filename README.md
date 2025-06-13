@@ -1,7 +1,4 @@
 # kivo_chatbot
-Semma da! Okay, naan oru **natural, human-friendly, plagiarism-free** version of the GitHub README kudukuren. Idhu unga Kivo AI project-ku suit aagura madhiri, konjam chill yet professional tone-la irukum.
-
----
 
 ## ✨ Kivo AI – Your Friendly AI Sidekick
 
