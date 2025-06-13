@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KIVO Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #6B46C1, #4FD1C5);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #chat-box {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      width: 95%;
+      max-width: 800px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(107, 70, 193, 0.3);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .user, .bot {
+      max-width: 80%;
+      padding: 15px;
+      border-radius: 18px;
+      margin: 10px 0;
+      animation: fadeIn 0.3s ease forwards;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 1.1rem;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #6B46C1;
+      color: white;
+      border-bottom-right-radius: 0;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: #F7FAFC;
+      color: #333;
+      border-bottom-left-radius: 0;
+      position: relative;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #6B46C1;
+    }
+
+    button {
+      background: #6B46C1;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    button:hover {
+      background: #553C9A;
+      transform: scale(1.05);
+    }
+
+    .code-container {
+      background: #3C366B;
+      color: #E6E6FA;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: Consolas, monospace;
+      position: relative;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid white;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .copy-block-btn {
+      background: #4FD1C5;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    pre, code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      margin: 0;
+      white-space: pre;
+    }
+
+    h1 {
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: center;
+      color: #6B46C1;
+      font-size: 1.5rem;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-box">
+    <h1>KIVO: Your AI Companion</h1>
+    <div id="messages"></div>
+    <form id="chat-form">
+      <input type="text" id="message" placeholder="Chat with KIVO..." required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('message');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const msg = messageInput.value.trim();
+      if (!msg) return;
+
+      appendMessage('user', msg);
+      messageInput.value = "";
+
+      try {
+        const res = await fetch('/get-response/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({ message: msg })
+        });
+
+        const data = await res.json();
+        appendMessage('bot', formatBotResponse(data.response));
+      } catch {
+        appendMessage('bot', '⚠️ Error: Could not get response.');
+      }
+    };
+
+    function appendMessage(sender, htmlContent) {
+      const div = document.createElement('div');
+      div.className = sender;
+      div.innerHTML = htmlContent;
+
+      if (sender === 'bot') {
+        const copyAllBtn = document.createElement('button');
+        copyAllBtn.textContent = 'Copy All';
+        copyAllBtn.className = 'copy-block-btn';
+        copyAllBtn.onclick = () => {
+          navigator.clipboard.writeText(div.innerText).then(() => {
+            copyAllBtn.textContent = 'Copied!';
+            setTimeout(() => copyAllBtn.textContent = 'Copy All', 1500);
+          });
+        };
+        div.appendChild(copyAllBtn);
+      }
+
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      div.querySelectorAll('.copy-btn').forEach(button => {
+        const codeEl = button.parentElement.querySelector('code');
+        button.onclick = () => {
+          navigator.clipboard.writeText(codeEl.innerText).then(() => {
+            button.textContent = 'Copied!';
+            setTimeout(() => button.textContent = 'Copy', 1500);
+          });
+        };
+      });
+    }
+
+    function formatBotResponse(text) {
+      return text.replace(/```([\s\S]*?)```/g, (_, code) => {
+        return `
+          <div class="code-container">
+            <button class="copy-btn">Copy</button>
+            <code>${escapeHtml(code)}</code>
+          </div>
+        `;
+      }).replace(/\n/g, '<br>');
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&apos;'
+      })[m]);
+    }
+  </script>
+</body>
+</html>
