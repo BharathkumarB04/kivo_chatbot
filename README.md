@@ -31,7 +31,7 @@ Wanna try it out locally? Here’s how:
 
 ```bash
 # 1. Clone the project
-git clone https://github.com/your-username/kivo-ai.git
+git clone https://github.com/BharathkumarB04/kivo-ai.git
 cd kivo-ai
 
 # 2. Set up a virtual environment
